@@ -41,7 +41,11 @@
     ></script>
     <script src="html2canvas.min.js"></script>
     <script>
-      var map = L.map("map").setView([51.508, -0.11], 15);
+
+      const map = L.map('map', {
+        scrollWheelZoom: true,
+        preferCanvas: true
+    }).setView([51.508, -0.11], 15)
 
       var tiles = L.tileLayer(
         "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -62,13 +66,27 @@
     <script type="text/javascript">
       function screenshot() {
         html2canvas(document.getElementById("map"), {
+          allowTaint: false,
+          logging: true,
+          taintTest: false,
           useCORS: true,
           width: document.getElementById("map").offsetWidth,
           height: document.getElementById("map").offsetHeight,
         }).then(function (canvas) {
           const image = canvas.toDataURL("image/png");
-          var newTab = window.open();
-          newTab.document.body.innerHTML = `<img src="${image}" width="auto" height="auto">`;
+          var link = document.createElement("a");
+          if (link.download !== undefined) {
+            let d = new Date();
+            let n = d.getTime();
+            link.download = "mapaIGN" + n;
+            link.href = image;
+            document.body.appendChild(link);
+            //window.jQuery(link).css("display", "none");
+            link.click();
+            document.body.removeChild(link);
+          } else {
+            console.log("error");
+          }
         });
       }
     </script>
